@@ -1,7 +1,7 @@
+#[allow(unused_const)]
 module 0x0::lending;
 
-
-/// Constants
+// Constants
 
 // Pool image or metadata URL
 const URL: vector<u8> = b"https://x.com/SuiHubAfrica/photo";
@@ -10,42 +10,42 @@ const URL: vector<u8> = b"https://x.com/SuiHubAfrica/photo";
 const ERR_INSUFFICIENT_FUND: u64 = 0;
 const ERR_LP_NOT_FOUND: u64 = 0;
 
-/// Represents a lending pool where users can deposit SUI and others can borrow from it.
+// Represents a lending pool where users can deposit SUI and others can borrow from it.
 public struct LendingPool has key, store {
     id: UID,
-    /// Name of the lending pool
+    // Name of the lending pool
     name: vector<u8>,
-    /// Creator of the pool
+    // Creator of the pool
     creator: address,
-    /// Total SUI balance in the pool
+    // Total SUI balance in the pool
     worth: sui::balance::Balance<sui::sui::SUI>,
-    /// Total amount borrowed (not currently used)
+    // Total amount borrowed (not currently used)
     total_borrows: u64,
-    /// URL for external pool metadata
+    // URL for external pool metadata
     url: sui::url::Url,
-    /// Fixed compensation or interest rate (e.g., 10%)
+    // Fixed compensation or interest rate (e.g., 10%)
     compasation: u64,
-    /// List of liquidity provider addresses
+    // List of liquidity provider addresses
     list_lp: vector<address>
 }
 
-/// Represents a loan taken from the pool
+// Represents a loan taken from the pool
 public struct Loan has key, store {
     id: UID,
-    /// Address of the borrower
+
     borrower: address,
-    /// Interest amount to repay (includes principal + fee)
+    // Interest amount to repay (includes principal + fee)
     interest: u64,
 }
 
-/// Represents a liquidity provider’s contribution to the pool
+// Represents a liquidity provider’s contribution to the pool
 public struct Liquidity_Provider has store, key {
     id: UID,
-    /// Contribution value (e.g. 2% of deposit)
+    // Contribution value (e.g. 2% of deposit)
     val: u64,
 }
 
-/// Initializes a new lending pool with default values
+// Initializes a new lending pool with default values
 fun init(ctx: &mut TxContext) {
     let pool = LendingPool {
         id: object::new(ctx),
@@ -62,11 +62,11 @@ fun init(ctx: &mut TxContext) {
     transfer::share_object(pool);
 }
 
-/// Deposits SUI into the pool from the sender's balance
-/// - `amount`: amount to deposit
-/// - `recipient_balance`: sender’s coin object to deduct from
-/// - `pool`: the pool to deposit into
-/// - `ctx`: transaction context
+// Deposits SUI into the pool from the sender's balance
+// - `amount`: amount to deposit
+// - `recipient_balance`: sender’s coin object to deduct from
+// - `pool`: the pool to deposit into
+// - `ctx`: transaction context
 public entry fun deposit(
     amount: u64,
     recipient_balance: &mut sui::coin::Coin<sui::sui::SUI>,
@@ -101,10 +101,10 @@ public entry fun deposit(
     transfer::public_transfer(i, ctx.sender());
 }
 
-/// Allows a user to borrow a specified `amount` from the pool
-/// - Deducts funds from the pool
-/// - Creates a Loan object
-/// - Transfers both the borrowed funds and loan object to the borrower
+// Allows a user to borrow a specified `amount` from the pool
+// - Deducts funds from the pool
+// - Creates a Loan object
+// - Transfers both the borrowed funds and loan object to the borrower
 public entry fun borrow(
     amount: u64,
     pool: &mut LendingPool,
@@ -133,11 +133,11 @@ public entry fun borrow(
     transfer::public_transfer(get_balance_in_coin, borrower);
 }
 
-/// Repays a loan by sending the owed amount back to the pool
-/// - `pool`: LendingPool to credit repayment
-/// - `loan`: Loan object containing the interest due
-/// - `coin`: Coin object with funds to repay
-/// - `ctx`: transaction context
+// Repays a loan by sending the owed amount back to the pool
+// - `pool`: LendingPool to credit repayment
+// - `loan`: Loan object containing the interest due
+// - `coin`: Coin object with funds to repay
+// - `ctx`: transaction context
 public entry fun repay(
     pool: &mut LendingPool,
     loan: &mut Loan,
